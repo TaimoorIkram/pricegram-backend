@@ -23,6 +23,7 @@ class Product(models.Model):
     delivery_fee = models.CharField(max_length=255, blank=True, null=True)
     imgs = models.CharField(max_length=255, blank=True, null=True)
     brand = models.CharField(max_length=255, blank=True, null=True)
+    slug = models.CharField(max_length=255, blank=True, null=True)
     category = models.CharField(max_length=255, blank=True, null=True)
     vendor = models.CharField(max_length=255, blank=True, null=True)
     avg_score = models.IntegerField(blank=True, null=True)
@@ -33,3 +34,7 @@ class Product(models.Model):
     reviews = models.CharField(max_length=3000, blank=True, null=True)
     recommended_products = models.CharField(max_length=255, blank=True, null=True)
     recommended_products_imgs = models.CharField(max_length=2000, blank=True, null=True)
+    
+    class Meta:
+        db_table = 'restbase_product'
+        managed = False
