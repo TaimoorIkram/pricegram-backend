@@ -1,10 +1,5 @@
 from rest_framework import serializers
-from restbase.models import Person, Product
-
-class PersonSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Person
-        fields = '__all__'
+from restbase.models import Product
 
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:

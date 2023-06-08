@@ -1,19 +1,13 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from restbase.models import Person, Product
-from .serializers import PersonSerializer, ProductSerializer
+from restbase.models import Product
+from .serializers import ProductSerializer
 from django.db.models import Q
 
 @api_view(['POST','GET'])
 def getAllItems(request):
     person = Product.objects.all()
     serializer = ProductSerializer(person, many=True)
-    return Response(serializer.data)
-
-@api_view(['POST'])
-def addPerson(request):
-    serializer = PersonSerializer(data=request.data)
-    if serializer.is_valid(): serializer.save()
     return Response(serializer.data)
 
 @api_view(['GET'])
