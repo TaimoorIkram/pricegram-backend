@@ -88,7 +88,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',  
         'NAME': 'pricegram_test',  
         'USER': 'root',  
-        'PASSWORD': 'Microsoft145',  
+        'PASSWORD': 'seecs',  
         'HOST': '127.0.0.1',  
         'PORT': '3306',
     }  
