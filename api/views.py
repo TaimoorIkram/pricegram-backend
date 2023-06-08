@@ -8,7 +8,7 @@ from django.db.models import Q
 def getAllItems(request):
     person = Product.objects.all()
     serializer = ProductSerializer(person, many=True)
-    return Response(serializer.data)
+    return Response(serializer.data[:25])
 
 @api_view(['GET'])
 def getProducts(request):
