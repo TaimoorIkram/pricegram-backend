@@ -4,9 +4,18 @@ from restbase.models import Product
 from .serializers import ProductSerializer
 from django.db.models import Q
 
-@api_view(['POST','GET'])
-def getAllItems(request):
-    person = Product.objects.all()
+
+@api_view(['GET'])
+def getAllRoutes(request):
+    return Response({
+        "getAllProducts/" : "Gives all the products",
+        "product/<int:id>/" : "Gives the product by id",
+        "products/" : "Gives the products based on search results",
+    })
+
+@api_view(['GET'])
+def getAllProducts(request):
+    person = Product.objects.all()[:25]
     serializer = ProductSerializer(person, many=True)
     return Response(serializer.data)
 
@@ -26,7 +35,7 @@ def getProducts(request):
         qvendor = Q(vendor = vendor)
         params &= qvendor
     print(params)
-    products = Product.objects.filter(params)
+    products = Product.objects.filter(params)[:25]
     serializer = ProductSerializer(products, many = True)
     data = serializer.data
     return Response(data)
