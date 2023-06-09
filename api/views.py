@@ -23,7 +23,7 @@ def getAllRoutes(request):
 def getAllProducts(request):
     person = Product.objects.all()[:25]
     serializer = ProductSerializer(person, many=True)
-    return Response(serializer.data)
+    return Response(serializer.data[:25])
 
 
 @api_view(['GET'])
