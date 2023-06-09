@@ -36,3 +36,20 @@ class Product(models.Model):
     class Meta:
         managed = False
         db_table = 'product'
+
+class SearchHistory(models.Model):
+    username = models.TextField(blank=True, null=True)
+    search_query = models.TextField(blank=True, null=True)
+    
+class ViewHistory(models.Model):
+    username = models.TextField(blank=True, null=True)
+    product_id = models.IntegerField(blank=True, null=True)
+    
+class VisitHistory(models.Model):
+    username = models.TextField(blank=True, null=True)
+    product_id = models.IntegerField(blank=True, null=True)
+    
+class Favourite(models.Model):
+    username = models.TextField(blank=True, null=True)
+    product_id = models.IntegerField(blank=True, null=True)
+    
