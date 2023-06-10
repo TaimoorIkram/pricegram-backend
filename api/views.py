@@ -1,9 +1,17 @@
+from django.shortcuts import redirect
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from rest_framework import status
+from rest_framework import status, generics
 from restbase.models import Product, Favourite, ViewHistory, SearchHistory, VisitHistory
-from .serializers import ProductSerializer, FavouriteSerializer, SearchHistorySerializer, ViewHistorySerializer, VisitHistorySerializer
+from .serializers import UserSerializer, ProductSerializer, FavouriteSerializer, SearchHistorySerializer, ViewHistorySerializer, VisitHistorySerializer
 from django.db.models import Q
+from django.contrib.auth.models import User
+from rest_framework.permissions import AllowAny
+
+
+# auth simplejwt
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 
 @api_view(['GET'])
@@ -113,3 +121,23 @@ def favourite(request):
         serializer = FavouriteSerializer(favourites)
         data = serializer.data
         return Response(data)
+
+
+# auth simplejwt
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+
+        # Add custom claims
+        token['username'] = user.username
+        # ...
+
+        return token
+    
+class MyTokenObtainPairView(TokenObtainPairView):
+    serializer_class = MyTokenObtainPairSerializer
+
+class RegisterUserView(generics.CreateAPIView):
+#   permission_classes = (AllowAny,)
+  serializer_class = UserSerializer

@@ -40,16 +40,32 @@ class Product(models.Model):
 class SearchHistory(models.Model):
     username = models.TextField(blank=True, null=True)
     search_query = models.TextField(blank=True, null=True)
+    search_time = models.DateField(auto_now=True)
+
+    def __str__(self) -> str:
+        return str(self.search_time)
     
 class ViewHistory(models.Model):
     username = models.TextField(blank=True, null=True)
     product_id = models.IntegerField(blank=True, null=True)
+    search_time = models.DateField(auto_now=True)
+
+    def __str__(self) -> str:
+        return str(self.search_time)
     
 class VisitHistory(models.Model):
     username = models.TextField(blank=True, null=True)
     product_id = models.IntegerField(blank=True, null=True)
+    search_time = models.DateField(auto_now=True)
+
+    def __str__(self) -> str:
+        return str(self.search_time)
     
 class Favourite(models.Model):
     username = models.TextField(blank=True, null=True)
     product_id = models.IntegerField(blank=True, null=True)
+    search_time = models.DateField(auto_now=True)
+
+    def __str__(self) -> str:
+        return str(self.search_time)
     
