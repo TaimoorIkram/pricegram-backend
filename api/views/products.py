@@ -8,7 +8,7 @@ from django.db.models import Q
 @api_view(['GET'])
 def getAllRoutes(request):
     return Response({
-        "getAllProducts/": "Gives all the products",
+        "all/": "Gives all the products",
         "product/<int:id>/": "Gives the product by id",
         "products/": "Gives the products based on filters",
         "search/": "Gives the products based on search results",
@@ -26,6 +26,12 @@ def getAllProducts(request):
     serializer = ProductSerializer(person, many=True)
     return Response(serializer.data[:25])
 
+@api_view(['GET'])
+def getProductById(request, id):
+    products = Product.objects.get(id=id)
+    serializer = ProductSerializer(products)
+    data = serializer.data
+    return Response(data)
 
 @api_view(['GET'])
 def getProducts(request):
@@ -48,10 +54,11 @@ def getProducts(request):
     data = serializer.data
     return Response(data)
 
-
 @api_view(['GET'])
-def getProductById(request, id):
-    products = Product.objects.get(id=id)
-    serializer = ProductSerializer(products)
-    data = serializer.data
-    return Response(data)
+def search(request):
+    person = Product.objects.all()[:25]
+    serializer = ProductSerializer(person, many=True)
+    return Response(serializer.data)
+    
+
+
