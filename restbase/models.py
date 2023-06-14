@@ -69,3 +69,11 @@ class Favourite(models.Model):
     def __str__(self) -> str:
         return str(self.search_time)
     
+class Like(models.Model):
+    username = models.TextField(blank=True, null=True)
+    product_id = models.IntegerField(blank=True, null=True)
+    search_time = models.DateField(auto_now=True)
+
+    def __str__(self) -> str:
+        return str(self.search_time)
+    

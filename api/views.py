@@ -1,19 +1,10 @@
-from django.shortcuts import redirect
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from rest_framework import status, generics
-from restbase.models import Product, Favourite, ViewHistory, SearchHistory, VisitHistory
-from .serializers import UserSerializer, ProductSerializer, FavouriteSerializer, SearchHistorySerializer, ViewHistorySerializer, VisitHistorySerializer
+from restbase.models import Product
+from .serializers import UserSerializer, ProductSerializer
 from django.db.models import Q
-from django.contrib.auth.models import User
-from rest_framework.permissions import AllowAny
 
-
-# auth simplejwt
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from rest_framework_simplejwt.views import TokenObtainPairView
-
-
+# Gives the routes of all API endpoints
 @api_view(['GET'])
 def getAllRoutes(request):
     return Response({
@@ -23,7 +14,8 @@ def getAllRoutes(request):
         "search/": "records search history of a user",
         "view/": "records when a user views a product",
         "visit/": "records when a user visits the external link of the product",
-        "favourite/": "records the favourite products of a user"
+        "favourite/": "records the favourite products of a user",
+        "like/": "records the likes of the user"
     })
 
 
@@ -62,82 +54,3 @@ def getProductById(request, id):
     serializer = ProductSerializer(products)
     data = serializer.data
     return Response(data)
-
-
-@api_view(['GET', 'POST'])
-def viewHistory(request):
-    if request.method == 'POST':
-        view = ViewHistorySerializer(request.data)
-        if view.is_valid():
-            view.save()
-            return Response(status=status.HTTP_200_OK)
-    else:
-        username = 'username'
-        products = Product.objects.get(username=username)
-        serializer = ProductSerializer(products)
-        data = serializer.data
-        return Response(data)
-
-
-@api_view(['POST'])
-def visitHistory(request):
-    visit = VisitHistory(request.data)
-    if visit.is_valid():
-        visit.save()
-        return Response(status=status.HTTP_200_OK)
-    else:
-        return Response(status=status.HTTP_400_BAD_REQUEST)
-
-
-@api_view(['POST', 'GET'])
-def searchHistory(request):
-    if request.method == 'POST':
-        search = SearchHistorySerializer(request.data)
-        if search.is_valid():
-            search.save()
-            return Response(status=status.HTTP_200_OK)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-    else:
-        username = 'username'
-        products = Product.objects.filter(username=username)
-        serializer = ProductSerializer(products)
-        data = serializer.data
-        return Response(data)
-
-
-@api_view(['POST', 'GET'])
-def favourite(request):
-    if request.method == 'POST':
-        favourite = FavouriteSerializer(request.data)
-        if favourite.is_valid():
-            favourite.save()
-            return Response(status=status.HTTP_200_OK)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-    else:
-        username = 'username'
-        favourites = Product.objects.filter(username=username)
-        serializer = FavouriteSerializer(favourites)
-        data = serializer.data
-        return Response(data)
-
-
-# auth simplejwt
-class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
-    @classmethod
-    def get_token(cls, user):
-        token = super().get_token(user)
-
-        # Add custom claims
-        token['username'] = user.username
-        # ...
-
-        return token
-    
-class MyTokenObtainPairView(TokenObtainPairView):
-    serializer_class = MyTokenObtainPairSerializer
-
-class RegisterUserView(generics.CreateAPIView):
-#   permission_classes = (AllowAny,)
-  serializer_class = UserSerializer

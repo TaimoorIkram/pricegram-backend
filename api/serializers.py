@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from restbase.models import Product, ViewHistory, Favourite, SearchHistory, VisitHistory
+from restbase.models import Product, ViewHistory, Favourite, SearchHistory, VisitHistory, Like
 from rest_framework.validators import UniqueValidator
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.models import User
@@ -28,6 +28,11 @@ class VisitHistorySerializer(serializers.ModelSerializer):
 class FavouriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Favourite
+        fields = '__all__'
+        
+class LikeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Like
         fields = '__all__'
 
 class UserSerializer(serializers.ModelSerializer):
