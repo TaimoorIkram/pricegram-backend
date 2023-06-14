@@ -1,7 +1,7 @@
 # Auth Simple JWT
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
-from .serializers import UserSerializer
+from ..serializers import UserSerializer
 from rest_framework import generics
 
 # Auth Simple JWT
