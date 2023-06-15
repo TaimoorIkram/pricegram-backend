@@ -48,7 +48,6 @@ def getProducts(request):
     if vendor is not None:
         qvendor = Q(vendor=vendor)
         params &= qvendor
-    print(params)
     products = Product.objects.filter(params)[:25]
     serializer = ProductSerializer(products, many=True)
     data = serializer.data

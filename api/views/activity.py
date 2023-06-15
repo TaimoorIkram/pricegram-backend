@@ -8,7 +8,7 @@ from rest_framework import status
 def viewHistory(request):
     username = None
     if request.method == 'POST':
-        product_id = request.POST['product_id']
+        product_id = request.data['product_id']
         view = ViewHistory(username=username, product_id= product_id)
         view.save()
         return Response(status=status.HTTP_200_OK)
@@ -22,21 +22,19 @@ def viewHistory(request):
 def visitHistory(request):
     username = None
     if request.method == 'POST':
-        product_id = request.POST['product_id']
+        product_id = request.data['product_id']
         visit = VisitHistory(username=username, product_id= product_id)
         visit.save()
         return Response(status=status.HTTP_200_OK)
     else:
-        visits = VisitHistory.objects.filter(username=username)
-        serializer = VisitHistorySerializer(visits, many=True)
-        return Response(serializer.data)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST', 'GET'])
 def searchHistory(request):
     username = None
     if request.method == 'POST':
-        search_query = request.POST['q']
+        search_query =  request.data['search_query']
         search = SearchHistory(username=username, search_query= search_query)
         search.save()
         return Response(status=status.HTTP_200_OK)
@@ -50,7 +48,7 @@ def searchHistory(request):
 def favourite(request):
     username = None
     if request.method == 'POST':
-        product_id = request.POST['product_id']
+        product_id = request.data['product_id']
         favourite = Favourite(username=username, product_id=product_id)
         favourite.save()
         return Response(status=status.HTTP_200_OK)
