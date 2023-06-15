@@ -61,7 +61,7 @@ def favourite(request):
 def like(request):
     username = None
     if request.method == 'POST':
-        product_id = request.POST['product_id']
+        product_id = request.data['product_id']
         favourite = Like(username=username, product_id=product_id)
         favourite.save()
         return Response(status=status.HTTP_200_OK)
