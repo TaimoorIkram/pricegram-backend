@@ -3,7 +3,8 @@ from rest_framework.decorators import api_view
 from restbase.models import Product
 from ..serializers import ProductSerializer
 from django.db.models import Q
-
+from rest_framework import status
+from ..searchmodel import *
 # Gives the routes of all API endpoints
 @api_view(['GET'])
 def getAllRoutes(request):
@@ -55,9 +56,9 @@ def getProducts(request):
 
 @api_view(['GET'])
 def search(request):
-    person = Product.objects.all()[:25]
-    serializer = ProductSerializer(person, many=True)
-    return Response(serializer.data)
+    search_query = request.query_params.get("q")
+    recommendations = engine.search(search_query, n_rec=30)
+    return Response(recommendations)
     
 
 
