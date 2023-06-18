@@ -37,10 +37,11 @@ def visitHistory(request):
 
 @api_view(['POST', 'GET'])
 def searchHistory(request):
-    username = None
+    username = request.user.username
+    print(request.user)
     if request.method == 'POST':
         search_query =  request.data['search_query']
-        username = request.data['username'] if request.data['username'] != None else None
+        #username = request.data['username'] if request.data['username'] != None else None
         search = SearchHistory(username=username, search_query= search_query)
         search.save()
         return Response(status=status.HTTP_200_OK)
