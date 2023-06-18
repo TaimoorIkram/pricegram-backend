@@ -15,7 +15,9 @@ urlpatterns = [
     path('view/', activity.viewHistory, name = 'view-history'),
     path('visit/', activity.visitHistory, name = 'visit-history'),
     path('favourite/', activity.favourite, name = 'favourite'),
+    path('favourite/<str:user>/<int:id>', activity.unitFavourite, name = 'specific-favourite'),
     path('like/', activity.like, name = 'like'),
+    path('like/<str:user>/<int:id>', activity.unitLike, name = 'specific-like'),
 
     # Auth API Routes
     path('token/', auth.MyTokenObtainPairView.as_view(), name='token_obtain_pair'),

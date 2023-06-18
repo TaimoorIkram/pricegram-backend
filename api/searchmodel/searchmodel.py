@@ -89,7 +89,7 @@ def data_fetcher(pks):
 
 engine = SearchEngine(
     data_fetcher = data_fetcher,
-    embeddings_path = "D:\\pricegram-backend\\api\\searchmodel\\use_embeddings.txt",
+    embeddings_path = "./use_embeddings.txt",
 )
 
 
