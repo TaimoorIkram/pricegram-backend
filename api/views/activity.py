@@ -6,14 +6,15 @@ from rest_framework import status
 
 @api_view(['GET', 'POST'])
 def viewHistory(request):
-    username = None
+    username = request.user.username
     if request.method == 'POST':
+        print(username,'viewHistory POST')
         product_id = request.data['product_id']
-        username = request.data['username'] if request.data['username'] != None else None
         view = ViewHistory(username=username, product_id= product_id)
         view.save()
         return Response(status=status.HTTP_200_OK)
     else:
+        print(username,'viewHistory GET')
         views = ViewHistory.objects.filter(username=username)
         ids = []
         for view in views:
@@ -24,28 +25,29 @@ def viewHistory(request):
 
 @api_view(['POST'])
 def visitHistory(request):
-    username = 'tammy'
+    username = request.user.username
     if request.method == 'POST':
+        print(username,'visitHistory POST')
         product_id = request.data['product_id']
-        username = request.data['username'] if request.data['username'] != None else None
         visit = VisitHistory(username=username, product_id= product_id)
         visit.save()
         return Response(status=status.HTTP_200_OK)
     else:
+        print(username,'visitHistory GET')
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST', 'GET'])
 def searchHistory(request):
     username = request.user.username
-    print(request.user)
     if request.method == 'POST':
+        print(username,'searchHistory POST') 
         search_query =  request.data['search_query']
-        #username = request.data['username'] if request.data['username'] != None else None
         search = SearchHistory(username=username, search_query= search_query)
         search.save()
         return Response(status=status.HTTP_200_OK)
     else:
+        print(username,'searchHistory GET') 
         searches = SearchHistory.objects.filter(username=username)
         serializer = SearchHistorySerializer(searches, many=True)
         return Response(serializer.data)
@@ -53,20 +55,22 @@ def searchHistory(request):
 
 @api_view(['POST', 'GET', 'DELETE'])
 def favourite(request):
-    username = 'tammy'
+    username = request.user.username
     if request.method == 'POST':
+        print(username,'favourite POST') 
         product_id = request.data['product_id']
-        username = request.data['username'] if request.data['username'] != None else None
         favourite = Favourite(username=username, product_id=product_id)
         favourite.save()
         return Response(status=status.HTTP_200_OK)
     elif request.method == 'DELETE':
+        print(username,'favourite DELETE') 
         product_id = request.data['product_id']
-        username = request.data['username'] if request.data['username'] != None else None
+        # username = request.data['username'] if request.data['username'] != None else None
         favourites = Favourite.objects.get(username=username, product_id=product_id)
         favourites.delete()
         return Response(status=status.HTTP_200_OK)
     else:
+        print(username,'favourite GET') 
         favourites = Favourite.objects.filter(username=username)
         ids = []
         for favourite in favourites:
@@ -77,20 +81,21 @@ def favourite(request):
     
 @api_view(['POST', 'GET', 'DELETE'])
 def like(request):
-    username = 'tammy'
+    username = request.user.username
     if request.method == 'POST':
+        print(username,'like POST') 
         product_id = request.data['product_id']
-        username = request.data['username'] if request.data['username'] != None else None
         like = Like(username=username, product_id=product_id)
         like.save()
         return Response(status=status.HTTP_200_OK)
     elif request.method == 'DELETE':
+        print(username,'like DELETE') 
         product_id = request.data['product_id']
-        username = request.data['username'] if request.data['username'] != None else None
         like = Like.objects.get(username=username, product_id=product_id)
         like.delete()
         return Response(status=status.HTTP_200_OK)
     else:
+        print(username,'like GET') 
         likes = Like.objects.filter(username=username)
         ids = []
         for like in likes:
