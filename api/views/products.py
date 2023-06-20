@@ -1,6 +1,6 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from restbase.models import Product
+from restbase.models import Product, SearchHistory, ViewHistory
 from ..serializers import ProductSerializer
 from django.db.models import Q
 from rest_framework import status
@@ -29,6 +29,9 @@ def getAllProducts(request):
 
 @api_view(['GET'])
 def getProductById(request, id):
+    username = request.user.username
+    view = ViewHistory(username=username, product_id= id)
+    view.save()
     products = Product.objects.get(id=id)
     serializer = ProductSerializer(products)
     data = serializer.data
@@ -56,7 +59,13 @@ def getProducts(request):
 
 @api_view(['GET'])
 def search(request):
+    username = request.user.username
     search_query = request.query_params.get("q")
+    search = SearchHistory(username=username, search_query= search_query)
+    search.save()
+    person = Product.objects.all()[:25]
+    serializer = ProductSerializer(person, many=True)
+    return Response(serializer.data[:25])
     """
     recommendations = engine.search(search_query, n_rec=30)
     

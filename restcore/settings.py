@@ -90,7 +90,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',  
         'NAME': 'pricegram_test',  
         'USER': 'root',  
-        'PASSWORD': 'Microsoft145',  
+        'PASSWORD': 'seecs',  
         'HOST': '127.0.0.1',  
         'PORT': '3306',
     }  
@@ -164,8 +164,8 @@ REST_FRAMEWORK = {
 from datetime import timedelta
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=20), # Changed
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=999), # Changed
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=9999),
     "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,
     "UPDATE_LAST_LOGIN": False,

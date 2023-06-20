@@ -4,16 +4,10 @@ from restbase.models import Favourite, Product, ViewHistory, SearchHistory, Visi
 from ..serializers import FavouriteSerializer, ProductSerializer, SearchHistorySerializer, ViewHistorySerializer, VisitHistorySerializer, LikeSerializer
 from rest_framework import status
 
-@api_view(['GET', 'POST'])
+@api_view(['GET'])
 def viewHistory(request):
     username = request.user.username
-    if request.method == 'POST':
-        print(username,'viewHistory POST')
-        product_id = request.data['product_id']
-        view = ViewHistory(username=username, product_id= product_id)
-        view.save()
-        return Response(status=status.HTTP_200_OK)
-    else:
+    if request.method == 'GET':
         print(username,'viewHistory GET')
         views = ViewHistory.objects.filter(username=username)
         ids = []
@@ -32,28 +26,18 @@ def visitHistory(request):
         visit = VisitHistory(username=username, product_id= product_id)
         visit.save()
         return Response(status=status.HTTP_200_OK)
-    else:
-        print(username,'visitHistory GET')
-        return Response(status=status.HTTP_400_BAD_REQUEST)
 
-
-@api_view(['POST', 'GET'])
+@api_view(['GET'])
 def searchHistory(request):
     username = request.user.username
-    if request.method == 'POST':
-        print(username,'searchHistory POST') 
-        search_query =  request.data['search_query']
-        search = SearchHistory(username=username, search_query= search_query)
-        search.save()
-        return Response(status=status.HTTP_200_OK)
-    else:
+    if request.method == 'GET':
         print(username,'searchHistory GET') 
         searches = SearchHistory.objects.filter(username=username)
         serializer = SearchHistorySerializer(searches, many=True)
         return Response(serializer.data)
 
 
-@api_view(['POST', 'GET', 'DELETE'])
+@api_view(['POST', 'GET'])
 def favourite(request):
     username = request.user.username
     if request.method == 'POST':
@@ -61,13 +45,6 @@ def favourite(request):
         product_id = request.data['product_id']
         favourite = Favourite(username=username, product_id=product_id)
         favourite.save()
-        return Response(status=status.HTTP_200_OK)
-    elif request.method == 'DELETE':
-        print(username,'favourite DELETE') 
-        product_id = request.data['product_id']
-        # username = request.data['username'] if request.data['username'] != None else None
-        favourites = Favourite.objects.get(username=username, product_id=product_id)
-        favourites.delete()
         return Response(status=status.HTTP_200_OK)
     else:
         print(username,'favourite GET') 
@@ -79,7 +56,7 @@ def favourite(request):
         serializer = ProductSerializer(products, many=True)
         return Response(serializer.data)
     
-@api_view(['POST', 'GET', 'DELETE'])
+@api_view(['POST', 'GET'])
 def like(request):
     username = request.user.username
     if request.method == 'POST':
@@ -87,12 +64,6 @@ def like(request):
         product_id = request.data['product_id']
         like = Like(username=username, product_id=product_id)
         like.save()
-        return Response(status=status.HTTP_200_OK)
-    elif request.method == 'DELETE':
-        print(username,'like DELETE') 
-        product_id = request.data['product_id']
-        like = Like.objects.get(username=username, product_id=product_id)
-        like.delete()
         return Response(status=status.HTTP_200_OK)
     else:
         print(username,'like GET') 
@@ -104,19 +75,36 @@ def like(request):
         serializer = ProductSerializer(products, many=True)
         return Response(serializer.data)
 
-@api_view(['POST', 'GET'])
-def unitLike(request, user, id):
+@api_view(['GET'])
+def unitLike(request,id):
     try:
-        likes = Like.objects.get(username=user, product_id=id)
+        username = request.user.username
+        likes = Like.objects.get(username=username, product_id=id)
         serializer = LikeSerializer(likes, many=False)
         return Response(serializer.data)
     except: return Response(status=status.HTTP_404_NOT_FOUND)
 
-@api_view(['POST', 'GET'])
-def unitFavourite(request, user, id):
+@api_view(['GET'])
+def unitFavourite(request,id):
     try:
-        favourites = Favourite.objects.get(username=user, product_id=id)
+        username = request.user.username
+        favourites = Favourite.objects.get(username=username, product_id=id)
         serializer = FavouriteSerializer(favourites, many=False)
         return Response(serializer.data)
     except: return Response(status=status.HTTP_404_NOT_FOUND)
     
+@api_view(['DELETE'])
+def unlike(request, id):
+    username = request.user.username
+    print(username,'like DELETE') 
+    like = Like.objects.get(username=username, product_id=id)
+    like.delete()
+    return Response(status=status.HTTP_200_OK)
+
+@api_view(['DELETE'])
+def removeFromFavourites(request, id):
+    username = request.user.username
+    print(username,'favourite DELETE') 
+    favourites = Favourite.objects.get(username=username, product_id=id)
+    favourites.delete()
+    return Response(status=status.HTTP_200_OK)

@@ -15,9 +15,11 @@ urlpatterns = [
     path('view/', activity.viewHistory, name = 'view-history'),
     path('visit/', activity.visitHistory, name = 'visit-history'),
     path('favourite/', activity.favourite, name = 'favourite'),
-    path('favourite/<str:user>/<int:id>', activity.unitFavourite, name = 'specific-favourite'),
+    path('unitfavourite/<int:id>', activity.unitFavourite, name = 'specific-favourite'),
     path('like/', activity.like, name = 'like'),
-    path('like/<str:user>/<int:id>', activity.unitLike, name = 'specific-like'),
+    path('unitlike/<int:id>', activity.unitLike, name = 'specific-like'),
+    path('rmvfavourite/<int:id>', activity.removeFromFavourites, name = 'remove-from-favourites'),
+    path('unlike/<int:id>', activity.unlike, name = 'unlike'),
 
     # Auth API Routes
     path('token/', auth.MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
