@@ -29,7 +29,10 @@ def getAllProducts(request):
 
 @api_view(['GET'])
 def getProductById(request, id):
-    username = request.user.username
+    try: 
+        username = request.user.username
+    except:
+        username = None
     view = ViewHistory(username=username, product_id= id)
     view.save()
     products = Product.objects.get(id=id)
