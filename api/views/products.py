@@ -59,8 +59,15 @@ def getProducts(request):
 
 @api_view(['GET'])
 def search(request):
-    username = request.user.username
+    try: 
+        username = request.user.username
+    except:
+        username = None
     search_query = request.query_params.get("q")
+    try:
+        print(request.query_params.getlist("processor[]"))
+    except:
+        pass
     search = SearchHistory(username=username, search_query= search_query)
     search.save()
     person = Product.objects.all()[:25]
