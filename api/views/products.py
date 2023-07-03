@@ -1,11 +1,12 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from restbase.models import Product, SearchHistory, ViewHistory
-from ..serializers import ProductSerializer
+from ..serializers import ProductSerializer, ReviewSerializer
 from django.db.models import Q
 from rest_framework import status
-#from ..searchmodel import *
-# Gives the routes of all API endpoints
+from ..searchmodel.searchmodel import *
+
+
 @api_view(['GET'])
 def getAllRoutes(request):
     return Response({
@@ -23,22 +24,30 @@ def getAllRoutes(request):
 
 @api_view(['GET'])
 def getAllProducts(request):
-    person = Product.objects.all()[:25]
-    serializer = ProductSerializer(person, many=True)
+    products = Product.objects.all()[:25]
+    serializer = ProductSerializer(products, many=True)
     return Response(serializer.data[:25])
+
 
 @api_view(['GET'])
 def getProductById(request, id):
-    try: 
+    try:
         username = request.user.username
     except:
         username = None
-    view = ViewHistory(username=username, product_id= id)
+    view = ViewHistory(username=username, product_id=id)
     view.save()
-    products = Product.objects.get(id=id)
-    serializer = ProductSerializer(products)
-    data = serializer.data
-    return Response(data)
+    product = Product.objects.prefetch_related('reviewss').get(id=id)
+    product_serializer = ProductSerializer(product)
+    reviews = list(product.reviewss.all())
+    review_serializers = ReviewSerializer(reviews, many=True)
+    serialized_reviews = [dict(item) for item in review_serializers.data]
+    serialized_product = product_serializer.data
+    serialized_product['reviewss'] = serialized_reviews
+    return Response({
+        "product": serialized_product,
+    })
+
 
 @api_view(['GET'])
 def getProducts(request):
@@ -60,26 +69,36 @@ def getProducts(request):
     data = serializer.data
     return Response(data)
 
+
 @api_view(['GET'])
 def search(request):
-    try: 
+    try:
         username = request.user.username
     except:
         username = None
     search_query = request.query_params.get("q")
     try:
-        print(request.query_params.getlist("processor[]"))
+        filters = dict(request.query_params)
+        filters.pop('q', None)
     except:
         pass
-    search = SearchHistory(username=username, search_query= search_query)
+    for key in filters.keys():
+        filters[key] = " ".join(filters[key])
+    print(filters)
+    search = SearchHistory(username=username, search_query=search_query)
     search.save()
-    person = Product.objects.all()[:25]
-    serializer = ProductSerializer(person, many=True)
-    return Response(serializer.data[:25])
-    """
-    recommendations = engine.search(search_query, n_rec=30)
-    
+    recommendations = engine.search(
+        query=search_query,
+        filters=filters,
+        k=100,
+    )
     return Response(recommendations)
-    """
 
 
+"""
+    products = Product.objects.all()[:25]
+    serializer = ProductSerializer(products, many=True)
+    data = serializer.data
+    return Response(data)
+    
+"""

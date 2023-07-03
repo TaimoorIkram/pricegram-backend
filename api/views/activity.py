@@ -1,7 +1,7 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from restbase.models import Favourite, Product, ViewHistory, SearchHistory, VisitHistory, Like
-from ..serializers import FavouriteSerializer, ProductSerializer, SearchHistorySerializer, ViewHistorySerializer, VisitHistorySerializer, LikeSerializer
+from restbase.models import Favourite, Product, Review, ViewHistory, SearchHistory, VisitHistory, Like
+from ..serializers import FavouriteSerializer, ProductSerializer, SearchHistorySerializer, LikeSerializer, ReviewSerializer
 from rest_framework import status
 
 @api_view(['GET'])
@@ -108,3 +108,15 @@ def removeFromFavourites(request, id):
     favourites = Favourite.objects.get(username=username, product_id=id)
     favourites.delete()
     return Response(status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+def insertReview(request):
+    username = request.user.username
+    id = request.data['id']
+    rating = request.data['rating']
+    comment = request.data['comment']
+    review = Review(product_id = id, username = username, average_rating=rating, comment=comment)
+    review.save()
+    return Response(status=status.HTTP_200_OK)
+    
+        

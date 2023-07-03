@@ -1,1 +1,1 @@
-from .searchmodel import *
+from ..searchmodel import *

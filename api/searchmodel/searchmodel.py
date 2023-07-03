@@ -1,81 +1,180 @@
-import tensorflow_hub as hub
+import os
+import json
+import joblib
+import time
 import numpy as np
-from thefuzz import fuzz
-from sklearn.metrics.pairwise import cosine_similarity
+import pandas as pd
+import tensorflow_hub as hub
+from thefuzz import fuzz, process
+from sklearn.metrics.pairwise import cosine_similarity, euclidean_distances
 from api.serializers import ProductSerializer
-import nltk
 from restbase.models import Product
-nltk.download('punkt')
+
 
 class Initializer():
-    def load_embeddings(self):
-        with open(self.embeddings_path, 'r') as f:
-            embeddings = eval(f.read())
-            self.embeddings = np.array(embeddings)
 
-    def load_model(self):
-        model = hub.load("https://tfhub.dev/google/universal-sentence-encoder/4")
-        self.encoder = lambda x: model([x]).numpy()
+    def __init__(self):
+        self.encoder = None
+        self.vectors = None
+        self.scaler = None
+
+    def initialize(self):
+        dump_path = self.dump_path
+        initializers = {
+            "Encoder": {
+                "path": "https://tfhub.dev/google/universal-sentence-encoder/4",
+                "loader": self.load_encoder
+            },
+            "Scaler": {
+                "path": os.path.join(dump_path, "scaler.pkl"),
+                "loader": self.load_scaler
+            },
+            "Vectors": {
+                "path": os.path.join(dump_path, "vectors.json"),
+                "loader": self.load_vectors
+            },
+        }
+
+        for name, obj in initializers.items():
+            path = obj['path']
+            loader = obj['loader']
+            time_i = time.time()
+            print(f" ------ Loading {name} ------ ")
+            loader(path)
+            print(
+                f" ------ {name} loaded in {round(time.time() - time_i, 3)}s ------ ")
+
+    def load_encoder(self, encoder_path):
+        self.encoder = hub.load(encoder_path)
+
+    def load_scaler(self, scaler_path):
+        self.scaler = joblib.load(scaler_path)
+
+    def load_vectors(self, vectors_path):
+        with open(vectors_path, 'rb') as f:
+            vectors = json.load(f)
+            for k, v in vectors.items():
+                vectors[k] = np.array(v)
+            self.vectors = vectors
+
 
 class Utils(Initializer):
-    def preprocess_query(self, query:str):
-        query = query.lower().strip()
-        return " ".join(query.split())
+    def preprocess_query(self, query):
+        return query.strip().lower()
 
-    def encode_query(self, query:str):
-        return self.encoder(query)
+    def prepare_queries(self, query, filters):
+        queries = []
+        q = self.preprocess_query(query)
+        if q != "":
+            queries.append(q)
+        for k, v in filters.items():
+            q = f"{k} {v}"
+            q = self.preprocess_query(q)
+            if q != "":
+                queries.append(q)
+        return queries
 
-    def find_cluster(self, encoder_query, cluster_size):
-        similarity_scores = cosine_similarity(encoder_query, self.embeddings)
-        return np.argsort(-similarity_scores.flatten())[:cluster_size]
+    def get_fuzzy_score(self, query, row):
+        query = query.lower()
+        def method(x): return fuzz.partial_ratio(query, x.lower())
+        best_score = -1
+        for k, v in row.items():
+            if type(v) == list:
+                if len(v) == 0:
+                    continue
+                for item in v:
+                    best_score = max(best_score, method(item))
+            elif type(v) == dict:
+                if len(v) == 0:
+                    continue
+                for k2, v2 in v.items():
+                    best_score = max(best_score, method(f"{k2} {v2}"))
+            elif not pd.isna(v):
+                best_score = max(best_score, method(f"{k} {v}"))
+        return best_score
 
-    def extract_ngrams(self, query):
-        tokens = query.split()
-
-        result = []
-        for i in range(1, len(query)+1):
-            result.extend([set(i) for i in nltk.ngrams(tokens, i)])
-        return [" ".join(i) for i in result]
-
-    def sort_cluster(self, query:str, best_cluster):
-        grams = self.extract_ngrams(query)
-
-        matching_optons = [
-            fuzz.partial_ratio,
-            fuzz.ratio,
-            fuzz.token_sort_ratio,
-            fuzz.token_set_ratio,
-        ]
-
-        scores = []
-        for product in best_cluster:
-            processed_product = self.preprocess_query(str(product))
-            score = 0
-            for gram in grams:
-                score += sum([r(processed_product, gram) for r in matching_optons])
-            scores.append(
-                [product, score]
-            )
-        products = [i[0] for i in sorted(scores, key=lambda x: x[1], reverse=True)]
-
+    def sort_by_fuzz(self, queries, products):
+        scores_mat = []
+        for q in queries:
+            scores_k = []
+            for product in products:
+                s = self.get_fuzzy_score(q, product)
+                scores_k.append(s)
+                # sents = product['sentences']
+                # processed = process.extractOne(q, sents, scorer=fuzz.partial_ratio)
+                # scores_k.append(processed[-1])
+            scores_mat.append(scores_k)
+        idx = np.argsort(-np.array(scores_mat).mean(axis=0))
+        products = [products[i] for i in idx]
         return products
 
-class SearchEngine(Utils):
-    def __init__(self, data_fetcher, embeddings_path=None, model_path=None):
-        self.embeddings_path = embeddings_path
-        self.model_path = model_path
+
+class Pipeline(Utils):
+    def pipe(self, **data):
+        pipes = {
+            "Encoder": self.encoder_pipe,
+            "Cluster": self.cluster_pipe,
+            "Sorter": self.sorter_pipe,
+        }
+        for pipe_name, pipe in pipes.items():
+            data = pipe(**data)
+        return data
+
+    def encoder_pipe(self, **data):
+        # preprocessing the querries
+        queries = self.prepare_queries(
+            data['query'],
+            data['filters']
+        )
+        # encoding textual queries to number vector
+        encoded = self.encoder(queries).numpy()
+        return {
+            'queries': queries,
+            'encoded': encoded,
+            'k': data['k'],
+        }
+
+    def cluster_pipe(self, **data):
+        # calculating scores
+        similarity_scores = -euclidean_distances(
+            data['encoded'],
+            self.vectors['vectors']
+        )
+        # sorting arguments by score
+        linear_idx = np.argsort(
+            - similarity_scores.mean(axis=0)
+        )
+        ids = self.vectors['labels'][linear_idx]
+        # removing duplicates
+        unique_arr, indices = np.unique(ids, return_index=True)
+        sorted_indices = np.sort(indices)
+        ids = ids[sorted_indices]
+        # selecting top-k
+        ids = ids[:data['k']]
+        return {
+            'queries': data['queries'],
+            'ids': ids,
+        }
+
+    def sorter_pipe(self, **data):
+        # fetching the data
+        products = self.data_fetcher(data['ids'])
+        # sorting the data using fuzzy logic
+        products = self.sort_by_fuzz(data['queries'], products)
+        return products
+
+
+class SearchEngine(Pipeline):
+    def __init__(self, data_fetcher, dump_path):
+        self.dump_path = dump_path
         self.data_fetcher = data_fetcher
-        self.load_embeddings()
-        self.load_model()
-
-    def search(self, query, n_rec):
-        processed_query = self.preprocess_query(query)
-        query_embeddings = self.encode_query(processed_query)
-        best_cluster_ids = self.find_cluster(query_embeddings, n_rec)
-        best_cluster = self.data_fetcher(best_cluster_ids)
-        sorted_best_cluster = self.sort_cluster(processed_query, best_cluster)
-
-        return sorted_best_cluster
+        
+    def search(self, query: str = "", filters: dict = {}, k: int = 100):
+        return self.pipe(
+            query=query,
+            filters=filters,
+            k=k,
+        )
 
 
 def data_fetcher(pks):
@@ -83,13 +182,14 @@ def data_fetcher(pks):
     products = Product.objects.filter(id__in=ids)
     serializer = ProductSerializer(products, many=True)
     data = serializer.data
-    return(data)
-      
+    return (data)
 
 
+# CREATING INSTANCE
 engine = SearchEngine(
     data_fetcher = data_fetcher,
-    embeddings_path = "./use_embeddings.txt",
+    dump_path = os.path.join("D:\\pricegram-backend\\api\\searchmodel\\data", "utils"),
 )
 
-
+# LOADING THE PIPELINE AND VECTORS
+engine.initialize()
