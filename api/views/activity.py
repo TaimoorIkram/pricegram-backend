@@ -114,8 +114,10 @@ def insertReview(request):
     username = request.user.username
     id = request.data['id']
     rating = request.data['rating']
+    stars = request.data['stars']
+    title = request.data['title']
     comment = request.data['comment']
-    review = Review(product_id = id, username = username, average_rating=rating, comment=comment)
+    review = Review(product_id = id, username = username, average_rating=rating, comment=comment, title=title, stars=stars)
     review.save()
     return Response(status=status.HTTP_200_OK)
     

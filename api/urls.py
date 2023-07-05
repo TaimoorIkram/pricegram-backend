@@ -16,9 +16,10 @@ urlpatterns = [
     path('visit/', activity.visitHistory, name = 'visit-history'),
     path('favourite/', activity.favourite, name = 'favourite'),
     path('unitfavourite/<int:id>', activity.unitFavourite, name = 'specific-favourite'),
+    path('rmvfavourite/<int:id>', activity.removeFromFavourites, name = 'remove-from-favourites'),
     path('like/', activity.like, name = 'like'),
     path('unitlike/<int:id>', activity.unitLike, name = 'specific-like'),
-    path('rmvfavourite/<int:id>', activity.removeFromFavourites, name = 'remove-from-favourites'),
+    path('unlike/<int:id>', activity.unlike, name = 'unlike'),
     #path('reviews/<int:id>', activity.getReviews, name = 'get-reviews'),
     path('review/', activity.insertReview, name = 'add-review'),
 

@@ -79,4 +79,7 @@ class Review(models.Model):
     username = models.TextField(blank=True, null=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE,  related_name='reviewss')
     average_rating = models.TextField(blank=True, null=True)
+    title = models.TextField(max_length=100, null=True)
+    stars = models.IntegerField(default=1)
     comment = models.TextField(blank=True, null=True)
+    date = models.DateField(auto_now=True)

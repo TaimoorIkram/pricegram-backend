@@ -188,7 +188,7 @@ def data_fetcher(pks):
 # CREATING INSTANCE
 engine = SearchEngine(
     data_fetcher = data_fetcher,
-    dump_path = os.path.join("D:\\pricegram-backend\\api\\searchmodel\\data", "utils"),
+    dump_path = os.path.join(os.path.dirname(__file__) + '\\data', "utils"),
 )
 
 # LOADING THE PIPELINE AND VECTORS
