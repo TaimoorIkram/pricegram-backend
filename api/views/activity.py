@@ -1,7 +1,7 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from restbase.models import Favourite, Product, Review, ViewHistory, SearchHistory, VisitHistory, Like
-from ..serializers import FavouriteSerializer, ProductSerializer, SearchHistorySerializer, LikeSerializer, ReviewSerializer
+from restbase.models import Favourite, Product, Review, ViewHistory, SearchHistory, VisitHistory, Like, SiteFeedback, BugStatus
+from ..serializers import FavouriteSerializer, ProductSerializer, SearchHistorySerializer, LikeSerializer, ReviewSerializer, SiteFeedbackSerializer, BugStatusSerializer
 from rest_framework import status
 
 @api_view(['GET'])
@@ -121,4 +121,21 @@ def insertReview(request):
     review.save()
     return Response(status=status.HTTP_200_OK)
     
-        
+@api_view(['POST'])
+def insertFeedback(request):
+    user = request.user
+    title = request.data['title']
+    comment = request.data['comment']
+    feedback = SiteFeedback(user=user, title=title, comment=comment)
+    feedback.save()
+    return Response(status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def getFeedback(request):
+    try:
+        user = request.user.id
+        feedbacks = SiteFeedback.objects.select_related().filter(user=user)
+        serializer = SiteFeedbackSerializer(feedbacks, many=True)
+        return Response(serializer.data)
+    except:
+        return Response(status=status.HTTP_404_NOT_FOUND)

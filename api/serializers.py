@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from restbase.models import Product, Review, ViewHistory, Favourite, SearchHistory, VisitHistory, Like
+from restbase.models import Product, Review, ViewHistory, Favourite, SearchHistory, VisitHistory, Like, SiteFeedback, BugStatus
 from rest_framework.validators import UniqueValidator
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.models import User
@@ -64,4 +64,17 @@ class UserSerializer(serializers.ModelSerializer):
 class ReviewSerializer(serializers.ModelSerializer):
   class Meta:
     model = Review
+    fields = '__all__'
+
+class BugStatusSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+      model = BugStatus
+      fields = '__all__'
+
+class SiteFeedbackSerializer(serializers.ModelSerializer):
+  status = BugStatusSerializer()
+
+  class Meta:
+    model = SiteFeedback
     fields = '__all__'

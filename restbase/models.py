@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 class Product(models.Model):
     slug = models.TextField(blank=True, null=True)
@@ -83,3 +84,27 @@ class Review(models.Model):
     stars = models.IntegerField(default=1)
     comment = models.TextField(blank=True, null=True)
     date = models.DateField(auto_now=True)
+
+class BugStatus(models.Model):
+    """
+    Status of the feedback, if it is a bug report.
+    """
+
+    status = models.CharField(max_length=100, null=False, blank=False)
+
+    def __str__(self) -> str:
+        return str(self.status)
+       
+class SiteFeedback(models.Model):
+    """
+    User's feedback on issues and improvements in the site features.
+    """
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    title = models.CharField(max_length=100)
+    comment = models.TextField(blank=True, null=False)
+    status = models.ForeignKey(BugStatus, on_delete=models.DO_NOTHING, default=1, related_name='issue_state')
+    date = models.DateField(auto_now=True)
+
+    def __str__(self) -> str:
+        return str(self.title + ' - ' + self.status.status)

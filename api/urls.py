@@ -21,6 +21,9 @@ urlpatterns = [
     path('unitlike/<int:id>', activity.unitLike, name = 'specific-like'),
     path('unlike/<int:id>', activity.unlike, name = 'unlike'),
     path('review/', activity.insertReview, name = 'add-review'),
+    path('feedback/', activity.insertFeedback, name = 'add-feedback'),
+    path('feedbacks/', activity.getFeedback, name = 'get-feedback'),
+    
     # Auth API Routes
     path('token/', auth.MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
