@@ -82,23 +82,24 @@ def search(request):
         filters.pop('q', None)
     except:
         pass
+    
     for key in filters.keys():
-        filters[key] = " ".join(filters[key])
-    print(filters)
+        if filters[key] != []:
+            filters[key] = " ".join(filters[key])
+        else:
+            filters.pop(key, None)
     search = SearchHistory(username=username, search_query=search_query)
     search.save()
+   
     recommendations = engine.search(
         query=search_query,
         filters=filters,
         k=100,
     )
     return Response(recommendations)
-
-
-"""
+    """
     products = Product.objects.all()[:25]
     serializer = ProductSerializer(products, many=True)
     data = serializer.data
     return Response(data)
-    
-"""
+    """
