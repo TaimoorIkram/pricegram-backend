@@ -3,6 +3,7 @@ from rest_framework.decorators import api_view
 from restbase.models import Favourite, Product, Review, ViewHistory, SearchHistory, VisitHistory, Like, SiteFeedback, BugStatus
 from ..serializers import FavouriteSerializer, ProductSerializer, SearchHistorySerializer, LikeSerializer, ReviewSerializer, SiteFeedbackSerializer, BugStatusSerializer
 from rest_framework import status
+from django.contrib.auth.models import User
 
 @api_view(['GET'])
 def viewHistory(request):
@@ -137,5 +138,15 @@ def getFeedback(request):
         feedbacks = SiteFeedback.objects.select_related().filter(user=user)
         serializer = SiteFeedbackSerializer(feedbacks, many=True)
         return Response(serializer.data)
+    except:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    
+@api_view(['POST'])
+def matchUser(request):
+    username_query = request.data['username']
+    try:
+        user = User.objects.get(username=username_query)
+        if(user is not None):
+            return Response(status=status.HTTP_200_OK)
     except:
         return Response(status=status.HTTP_404_NOT_FOUND)
