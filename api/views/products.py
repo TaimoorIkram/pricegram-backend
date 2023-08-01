@@ -4,8 +4,8 @@ from restbase.models import Product, SearchHistory, ViewHistory
 from ..serializers import ProductSerializer, ReviewSerializer
 from django.db.models import Q
 from rest_framework import status
-from ..searchmodel.searchmodel import *
-
+from django.core.paginator import Paginator
+from ..pricegram_search.engine import engine
 
 @api_view(['GET'])
 def getAllRoutes(request):
@@ -79,27 +79,39 @@ def search(request):
     search_query = request.query_params.get("q")
     try:
         filters = dict(request.query_params)
-        filters.pop('q', None)
     except:
         pass
-    
-    for key in filters.keys():
-        if filters[key] != []:
-            filters[key] = " ".join(filters[key])
-        else:
-            filters.pop(key, None)
+
+    keywords = []
+    for keyword_list in filters.values():
+        for keyword in keyword_list:
+            print(keyword)
+            keywords.append(keyword)
+    print(keywords)
     search = SearchHistory(username=username, search_query=search_query)
     search.save()
-   
-    recommendations = engine.search(
-        query=search_query,
-        filters=filters,
+
+# LOADING THE PIPELINE AND VECTORS
+    
+    results = engine.search(
+        keywords=keywords,
         k=100,
     )
-    return Response(recommendations)
+
     """
-    products = Product.objects.all()[:25]
+    products = Product.objects.all()[:500]
     serializer = ProductSerializer(products, many=True)
     data = serializer.data
-    return Response(data)
     """
+
+    page_number = request.query_params.get("page")
+    if page_number == None:
+        page_number = 1
+    paginator = Paginator(results, 40)
+    total_pages = paginator.num_pages
+    page_obj = paginator.page(page_number)
+    products = page_obj.object_list
+    return Response({
+        'products': products,
+        'totalPages': total_pages
+    })
