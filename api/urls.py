@@ -23,6 +23,7 @@ urlpatterns = [
     path('review/', activity.insertReview, name = 'add-review'),
     path('feedback/', activity.insertFeedback, name = 'add-feedback'),
     path('feedbacks/', activity.getFeedback, name = 'get-feedback'),
+    path('matchuser/', activity.matchUser, name = 'match-user'),
     
     # Auth API Routes
     path('token/', auth.MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
