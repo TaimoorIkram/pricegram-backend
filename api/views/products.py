@@ -5,7 +5,7 @@ from ..serializers import ProductSerializer, ReviewSerializer
 from django.db.models import Q
 from rest_framework import status
 from django.core.paginator import Paginator
-from ..pricegram_search.engine import engine
+from ..pricegram_search.engine_instance import engine
 
 @api_view(['GET'])
 def getAllRoutes(request):
