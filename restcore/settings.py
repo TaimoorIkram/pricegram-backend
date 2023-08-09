@@ -89,8 +89,8 @@ DATABASES = {
     'default': {  
         'ENGINE': 'django.db.backends.postgresql',  
         'NAME': 'pricegram-beta-database',  
-        'USER': 'root',  
-        'PASSWORD': 'pricegram@SEECS#22',  
+        'USER': 'kgaeiszluf',  
+        'PASSWORD': 'LO6AWR33E516A72N$',  
         'HOST': '127.0.0.1',  
         'PORT': '3306',
     }  
