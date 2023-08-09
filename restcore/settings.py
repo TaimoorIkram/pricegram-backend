@@ -26,7 +26,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 SECRET_KEY = "django-insecure-^+r%db$j+d=p@9su**(e1vyeca30f7)6dj9_ct6%^d(*+($@5*"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["*"]
 
@@ -87,10 +87,10 @@ WSGI_APPLICATION = 'restcore.wsgi.application'
 
 DATABASES = {  
     'default': {  
-        'ENGINE': 'django.db.backends.mysql',  
-        'NAME': 'pricegram_test',  
+        'ENGINE': 'django.db.backends.postgresql',  
+        'NAME': 'pricegram-beta-database',  
         'USER': 'root',  
-        'PASSWORD': 'Microsoft145',  
+        'PASSWORD': 'pricegram@SEECS#22',  
         'HOST': '127.0.0.1',  
         'PORT': '3306',
     }  
