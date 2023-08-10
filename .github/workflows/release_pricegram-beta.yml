@@ -34,6 +34,9 @@ jobs:
           pip install -r requirements.txt
         
       # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
+
+      - name: Install the PriceGram Engine
+        uses: cd
       
       - name: Upload artifact for deployment jobs
         uses: actions/upload-artifact@v2
