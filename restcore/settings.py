@@ -92,9 +92,9 @@ DATABASES = {
         'USER': 'pricegram',  
         'PASSWORD': 'seecs@123',  
         'HOST': 'pricegram.mysql.database.azure.com',  
-        # 'PORT': '5432',
+        'PORT': '3306',
         'OPTIONS': {
-            'sslmode': 'require',
+            'ssl': {'ca': '/certificates/DigiCertGlobalRootCA.crt.pem'},
         }
     }  
 }  
