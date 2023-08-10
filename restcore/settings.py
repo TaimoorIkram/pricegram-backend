@@ -91,8 +91,8 @@ DATABASES = {
         'NAME': 'pricegram-beta-database',  
         'USER': 'kgaeiszluf',  
         'PASSWORD': 'LO6AWR33E516A72N$',  
-        'HOST': '127.0.0.1',  
-        'PORT': '3306',
+        'HOST': 'pricegram-beta-server.postgres.database.azure.com',  
+        'PORT': '5432',
     }  
 }  
 

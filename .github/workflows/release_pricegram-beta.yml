@@ -34,7 +34,10 @@ jobs:
           pip install -r requirements.txt
         
       - name: Install the PriceGram Engine
-        run: ls
+        run: |
+          python3 manage.py makemigrations
+          python3 manage.py migrate
+          python3 manage.py runserver
 
       # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
       
