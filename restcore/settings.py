@@ -88,10 +88,10 @@ WSGI_APPLICATION = 'restcore.wsgi.application'
 DATABASES = {  
     'default': {  
         'ENGINE': 'django.db.backends.postgresql',  
-        'NAME': 'pricegram-beta-database-database',  
+        'NAME': 'pricegram-beta-database',  
         'USER': 'kgaeiszluf',  
         'PASSWORD': 'LO6AWR33E516A72N$',  
-        'HOST': 'pricegram-beta-server.postgres.database.azure.com',  
+        'HOST': '127.0.0.11',  
         'PORT': '5432',
         'OPTIONS': {
             'sslmode': 'require',
