@@ -94,7 +94,7 @@ DATABASES = {
         'HOST': 'pricegram.mysql.database.azure.com',  
         'PORT': '3306',
         'OPTIONS': {
-            'ssl': {'ca': '/certificates/crt.pem'},
+            'ssl': {'ssl-ca': '/certificates/crt.pem'},
         }
     }  
 }  
