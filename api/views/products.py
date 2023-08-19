@@ -83,11 +83,10 @@ def search(request):
         pass
 
     keywords = []
-    for keyword_list in filters.values():
-        for keyword in keyword_list:
-            print(keyword)
-            keywords.append(keyword)
-    print(keywords)
+    for keyword_list in zip(filters.keys(), filters.values()):
+        for keyword in keyword_list[1]:
+            if keyword_list[0] != 'page':
+                keywords.append(keyword)
     search = SearchHistory(username=username, search_query=search_query)
     search.save()
 
@@ -95,6 +94,7 @@ def search(request):
     
     results = engine.search(
         keywords=keywords,
+        cluster_size=30,
         k=100,
     )
 
