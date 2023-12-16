@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 def viewHistory(request):
     username = request.user.username
     if request.method == 'GET':
-        print(username,'viewHistory GET')
+        # print(username,'viewHistory GET')
         views = ViewHistory.objects.filter(username=username)
         ids = []
         for view in views:
@@ -22,7 +22,7 @@ def viewHistory(request):
 def visitHistory(request):
     username = request.user.username
     if request.method == 'POST':
-        print(username,'visitHistory POST')
+        # print(username,'visitHistory POST')
         product_id = request.data['product_id']
         visit = VisitHistory(username=username, product_id= product_id)
         visit.save()
@@ -32,7 +32,7 @@ def visitHistory(request):
 def searchHistory(request):
     username = request.user.username
     if request.method == 'GET':
-        print(username,'searchHistory GET') 
+        # print(username,'searchHistory GET') 
         searches = SearchHistory.objects.filter(username=username)
         serializer = SearchHistorySerializer(searches, many=True)
         return Response(serializer.data)
@@ -42,13 +42,13 @@ def searchHistory(request):
 def favourite(request):
     username = request.user.username
     if request.method == 'POST':
-        print(username,'favourite POST') 
+        # print(username,'favourite POST') 
         product_id = request.data['product_id']
         favourite = Favourite(username=username, product_id=product_id)
         favourite.save()
         return Response(status=status.HTTP_200_OK)
     else:
-        print(username,'favourite GET') 
+        # print(username,'favourite GET') 
         favourites = Favourite.objects.filter(username=username)
         ids = []
         for favourite in favourites:
@@ -61,13 +61,13 @@ def favourite(request):
 def like(request):
     username = request.user.username
     if request.method == 'POST':
-        print(username,'like POST') 
+        # print(username,'like POST') 
         product_id = request.data['product_id']
         like = Like(username=username, product_id=product_id)
         like.save()
         return Response(status=status.HTTP_200_OK)
     else:
-        print(username,'like GET') 
+        # print(username,'like GET') 
         likes = Like.objects.filter(username=username)
         ids = []
         for like in likes:
@@ -97,7 +97,7 @@ def unitFavourite(request,id):
 @api_view(['DELETE'])
 def unlike(request, id):
     username = request.user.username
-    print(username,'like DELETE') 
+    # print(username,'like DELETE') 
     like = Like.objects.get(username=username, product_id=id)
     like.delete()
     return Response(status=status.HTTP_200_OK)
@@ -105,7 +105,7 @@ def unlike(request, id):
 @api_view(['DELETE'])
 def removeFromFavourites(request, id):
     username = request.user.username
-    print(username,'favourite DELETE') 
+    # print(username,'favourite DELETE') 
     favourites = Favourite.objects.get(username=username, product_id=id)
     favourites.delete()
     return Response(status=status.HTTP_200_OK)
@@ -129,7 +129,7 @@ def insertFeedback(request):
     comment = request.data['comment']
     feedback = SiteFeedback(user=user, title=title, comment=comment)
     feedback.save()
-    return Response(status=status.HTTP_200_OK)
+    return Response(data="OK", status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 def getFeedback(request):
