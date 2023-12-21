@@ -143,7 +143,7 @@ class APITest(TestCase):
         
     def test_add_feedback(self):
         client = Client()
-        result = client.post('http://127.0.0.1:8000/api/visit/', {
+        result = client.post('http://127.0.0.1:8000/api/feedback/', {
             "user": {"username": "pg"},
             "title": "Good Product",
             "comment" : "Quality is good!",
