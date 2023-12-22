@@ -107,31 +107,33 @@ class APITest(TestCase):
     def test_add_like(self):
         client = Client()
         result = client.post('http://127.0.0.1:8000/api/like/', {
-            "id": 1,
+            "product_id": 1,
         }, headers={"Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzg5MDQ1MDQ1LCJpYXQiOjE3MDI3MzE0NDUsImp0aSI6IjE1MDMzODA0ZWZiZDRkYTViMWU3OWQxNWE1NzE5NzJlIiwidXNlcl9pZCI6MiwidXNlcm5hbWUiOiJwZyJ9.RddHoigg3iRrIo1wLrwS90UQkgL8TNcm6Z0G_1KkpA8"})
         self.assertEqual(200, result.status_code)
         
     def test_add_favourite(self):
         client = Client()
         result = client.post('http://127.0.0.1:8000/api/favourite/', {
-            "id": 1,
+            "product_id": 1,
         }, headers={"Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzg5MDQ1MDQ1LCJpYXQiOjE3MDI3MzE0NDUsImp0aSI6IjE1MDMzODA0ZWZiZDRkYTViMWU3OWQxNWE1NzE5NzJlIiwidXNlcl9pZCI6MiwidXNlcm5hbWUiOiJwZyJ9.RddHoigg3iRrIo1wLrwS90UQkgL8TNcm6Z0G_1KkpA8"})
         self.assertEqual(200, result.status_code)
         
     def test_match_user(self):
         client = Client()
-        result = client.get('http://127.0.0.1:8000/api/matchuser/pg', headers={"Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzg5MDQ1MDQ1LCJpYXQiOjE3MDI3MzE0NDUsImp0aSI6IjE1MDMzODA0ZWZiZDRkYTViMWU3OWQxNWE1NzE5NzJlIiwidXNlcl9pZCI6MiwidXNlcm5hbWUiOiJwZyJ9.RddHoigg3iRrIo1wLrwS90UQkgL8TNcm6Z0G_1KkpA8"})
-        self.assertEqual(200, result)
+        result = client.post('http://127.0.0.1:8000/api/matchuser/',{
+            "username": "pg",
+        }, headers={"Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzg5MDQ1MDQ1LCJpYXQiOjE3MDI3MzE0NDUsImp0aSI6IjE1MDMzODA0ZWZiZDRkYTViMWU3OWQxNWE1NzE5NzJlIiwidXNlcl9pZCI6MiwidXNlcm5hbWUiOiJwZyJ9.RddHoigg3iRrIo1wLrwS90UQkgL8TNcm6Z0G_1KkpA8"})
+        self.assertEqual(200, result.status_code)
         
-    def test_unitlike(self):
+    def test_unitlike_not_exists(self):
         client = Client()
         result = client.get('http://127.0.0.1:8000/api/unitlike/1', headers={"Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzg5MDQ1MDQ1LCJpYXQiOjE3MDI3MzE0NDUsImp0aSI6IjE1MDMzODA0ZWZiZDRkYTViMWU3OWQxNWE1NzE5NzJlIiwidXNlcl9pZCI6MiwidXNlcm5hbWUiOiJwZyJ9.RddHoigg3iRrIo1wLrwS90UQkgL8TNcm6Z0G_1KkpA8"})
-        self.assertEqual(1, result.product_id)
+        self.assertEqual(404, result.status_code)
         
-    def test_unitfavourite(self):
+    def test_unitfavourite_not_exists(self):
         client = Client()
         result = client.get('http://127.0.0.1:8000/api/unitfavourite/1', headers={"Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzg5MDQ1MDQ1LCJpYXQiOjE3MDI3MzE0NDUsImp0aSI6IjE1MDMzODA0ZWZiZDRkYTViMWU3OWQxNWE1NzE5NzJlIiwidXNlcl9pZCI6MiwidXNlcm5hbWUiOiJwZyJ9.RddHoigg3iRrIo1wLrwS90UQkgL8TNcm6Z0G_1KkpA8"})
-        self.assertEqual(1, result.product_id)
+        self.assertEqual(404, result.status_code)
         
     
     def test_add_visit_external_site(self):
